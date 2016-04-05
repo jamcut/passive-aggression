@@ -7,113 +7,12 @@ from os.path import exists
 import sys
 import time
 
-try:
-  import requests
-except ImportError:
-  print('[-] Could not import requests.  Please run')
-  print('pip install requests')
-  sys.exit(1)
-
-try:
-  from termcolor import colored
-  COLORS = True
-except ImportError:
-  print('[-] Could not import termcolor.  For colored output, please run')
-  print('pip install termcolor')
+import lib.passive as pt
+import lib.printer
 
 # Hardcode your creds if you are inclined
 USERNAME = None
 API_KEY = None
-
-class StatusPrinter():
-  """Class for accessing status printing functions"""
-
-  def print_status(self, msg):
-    """Print a message using the status format"""
-    status_prefix = '[*] '
-    if COLORS:
-      status_prefix = colored(status_prefix, 'blue', attrs=['bold'])
-    print(status_prefix + msg)
-
-  def print_good(self, msg):
-    """Print a message using the good format"""
-    status_prefix = '[+] '
-    if COLORS:
-      status_prefix = colored(status_prefix, 'green', attrs=['bold'])
-    print(status_prefix + msg)
-
-  def print_error(self, msg):
-    """Print a message using the error format"""
-    status_prefix = '[-] '
-    if COLORS:
-      status_prefix = colored(status_prefix, 'red', attrs=['bold'])
-    print(status_prefix + msg)
-
-  def print_warn(self, msg):
-    """Print a message using the warn format"""
-    status_prefix = '[!] '
-    if COLORS:
-      status_prefix = colored(status_prefix, 'yellow', attrs=['bold'])
-    print(status_prefix + msg)
-
-class PassiveTotal():
-  """Class to organize various functions exposed through the PassiveTotal.org API"""
-
-  def __init__(self, auth, domain, ip, verbose):
-    """Initialize a new instance of the PassiveTotal class"""
-    self.auth = auth
-    self.domain = domain
-    if not self.domain == None:
-      self.wildcard_domain = '*.' + self.domain
-    self.ip = ip
-    self.verbose = verbose
-
-  def send_request_v2(self, url, params):
-    """Send a request to the v2 API"""
-    response = requests.get(url, auth=self.auth, params=params)
-    loaded_content = json.loads(response.content)
-    return loaded_content
-
-  def verify_account(self):
-    """Confirm that the specified Passive Total account is valid"""
-    successful_auth = False
-    url = 'https://api.passivetotal.org/v2/account'
-    loaded_content = self.send_request_v2(url, params=None)
-    return loaded_content
-
-  def get_passive_dns(self):
-    """Get passive DNS records for the specified domain"""
-    url = 'https://api.passivetotal.org/v2/dns/passive'
-    params = {'query': self.domain}
-    loaded_content = self.send_request_v2(url, params)
-    return loaded_content
-
-  def get_subdomains(self):
-    """Get the subdomains for the specified domain using the enrichment API"""
-    url = 'https://api.passivetotal.org/v2/enrichment/subdomains'
-    params = {'query': self.wildcard_domain}
-    loaded_content = self.send_request_v2(url, params)
-    return loaded_content
-
-  def get_enrichment(self):
-    """Get enrichment data for specified domain or IP address"""
-    url = 'https://api.passivetotal.org/v2/enrichment'
-    if self.domain == None:
-      query = self.ip
-    else:
-      query = self.domain
-    params = {'query': query}
-    loaded_content = self.send_request_v2(url, params)
-    return loaded_content
-
-  def get_host_attributes(self):
-    """Get host attributes for specified domain)"""
-    url = 'https://api.passivetotal.org/v2/host-attributes/components'
-    params = {'query': self.domain}
-    loaded_content = self.send_request_v2(url, params)
-    return loaded_content
-
-# main program is below
 
 def check_resp_for_errors(loaded_content, printer):
   """Check API responses for errors"""
@@ -192,7 +91,6 @@ def host_attributes(printer, pt):
     hostnames = set()
     attributes = ['Operating System', 'Server', 'Framework', 'CMS']
     results = host_attributes['results']
-    printer.print_good('Host Attributes line 199')
     for result in results:
       hostnames.add(result['hostname'])
       os = set()
@@ -221,11 +119,8 @@ def host_attributes(printer, pt):
         hostname_dict['CMS'] = cms
       for k, v in hostname_dict.iteritems():
         if len(v) > 0:
-          printer.print_status('{0} Identified line 231'.format(k))
           for item in v:
             print(item)
-        else:
-          printer.print_status('No {0} Identified line 235'.format(k))
 
 def ip_metadata(printer, pt):
   """Get, parse, and print metadata information for an IP"""
@@ -242,12 +137,6 @@ def ip_metadata(printer, pt):
       printer.print_status('Tags')
       for tag in ip_metadata['tags']:
         print(tag)
-
-# def prepare_output(printer, domain, ip):
-#   """Setup output files and directories"""
-#   if exists('./results') == False:
-#     mkdir('./results')
-#   if exists
 
 if __name__ == '__main__':
  args = get_args()
@@ -281,7 +170,7 @@ if ip != None:
 # create authentiction object
 if args.username == None:
   if USERNAME == None:
-    printer.print_error('A username must be defined.  Either use the -u switch, or edit line 24.')
+    printer.print_error('A username must be defined.  This can be done with the "-u" flag or on line 14.')
     sys.exit(1)
   else:
     user = USERNAME
@@ -290,15 +179,13 @@ else:
 
 if args.apikey == None:
   if API_KEY == None:
-    printer.print_error('An API key must be defined.  Either use the -a switch, or edit line 25.')
+    printer.print_error('An API key must be defined.  This can be done with the "-a" flag or on line 15.')
     sys.exit(1)
   else:
     key = API_KEY
 else:
   key = args.apikey
 auth = (user, key)
-
-#prepare_output(printer)
 
 # create PassiveTotal object
 pt = PassiveTotal(auth, domain, ip, verbose)
