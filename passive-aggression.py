@@ -192,7 +192,7 @@ if ip != None:
 # create authentiction object
 if args.username == None:
   if USERNAME == None:
-    sp.print_error('A username must be defined.  This can be done with the "-u" flag or on line 14.')
+    sp.print_error('A username must be defined.  This can be done with the "-u" flag or on line 33.')
     sys.exit(1)
   else:
     user = USERNAME
@@ -201,7 +201,7 @@ else:
 
 if args.apikey == None:
   if API_KEY == None:
-    sp.print_error('An API key must be defined.  This can be done with the "-a" flag or on line 15.')
+    sp.print_error('An API key must be defined.  This can be done with the "-a" flag or on line 34.')
     sys.exit(1)
   else:
     key = API_KEY
