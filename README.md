@@ -1,6 +1,6 @@
 # Passive Aggression
 
-This script is designed to leverage the [Passive Total API](https://api.passivetotal.org/api/docs/) for enumerating information for a target domain which could be useful in target profiling and recon.
+This script is designed to leverage the [Passive Total API](https://api.passivetotal.org/api/docs/) for enumerating information for a target domain which could be useful in target profiling and recon.  It should go without saying that, at minimum, a free account for Passive Total will need to be created to obtain an API key.
 
 ## Arguments:
 One positional argument is required to dictate the type of information requested from the API.  Available options for this argument include:
