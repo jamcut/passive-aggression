@@ -46,7 +46,7 @@ def check_resp_for_errors(loaded_content, sp):
 
 def get_args():
   """Get arguments from the command line"""
-  parser = argparse.ArgumentParser(description='Script to leverage the PassiveTotal API for target profiling and recon.')
+  parser = argparse.ArgumentParser(description='Script to leverage the Passive Total API for target profiling and recon.')
   parser.add_argument('enum', choices=['all', 'dns', 'subdomains', 'metadata', 'attributes'],
     default='all', help='info to enumerate for target IP or domain.')
   meg = parser.add_mutually_exclusive_group()
