@@ -46,15 +46,15 @@ def check_resp_for_errors(loaded_content, sp):
 
 def get_args():
   """Get arguments from the command line"""
-  parser = argparse.ArgumentParser(description='Test script to check out some of the abilities of PassiveTotal')
+  parser = argparse.ArgumentParser(description='Script to leverage the PassiveTotal API for target profiling and recon.')
   parser.add_argument('enum', choices=['all', 'dns', 'subdomains', 'metadata', 'attributes'],
     default='all', help='info to enumerate for target IP or domain.')
   meg = parser.add_mutually_exclusive_group()
-  meg.add_argument('-d', '--domain', help='domain to query for', default=None)
-  meg.add_argument('-i', '--ipaddress', help='IP address to query for', default=None)
+  meg.add_argument('-d', '--domain', help='domain to enumerate', default=None)
+  meg.add_argument('-i', '--ipaddress', help='IP address to enumerate', default=None)
   parser.add_argument('-u', '--username', help='PassiveTotal username', default=None)
   parser.add_argument('-a', '--apikey', help='PassiveTotal API key', default=None)
-  parser.add_argument('-v', '--verbose', help='show verbose output', action='store_true')
+  parser.add_argument('-v', '--verbose', help='enable verbose output', action='store_true')
   args = parser.parse_args()
   return args
 
