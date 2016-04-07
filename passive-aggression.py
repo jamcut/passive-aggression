@@ -62,27 +62,27 @@ def passive_dns(sp, pt):
     """Get, parse, and print passive DNS records"""
     passive_dns = pt.get_passive_dns()
     if not check_resp_for_errors(passive_dns, sp):
-    sp.print_good('Total records for "{0}": {1}'.format(domain, passive_dns['totalRecords']))
-    results = passive_dns['results']
+        sp.print_good('Total records for "{0}": {1}'.format(domain, passive_dns['totalRecords']))
+        results = passive_dns['results']
     for result in results:
-    if not 'resolve' in result:
-        # this critical piece of info is missing so skip this result
-        if verbose == True:
-        sp.print_warn("Record skipped because it did not include an IP address.")
+        if not 'resolve' in result:
+            # this critical piece of info is missing so skip this result
+            if verbose == True:
+                sp.print_warn("Record skipped because it did not include an IP address.")
         continue
-    sp.print_status('IP Address: {0}'.format(result['resolve']))
-    sources = ''
-    for source in result['source']:
-        sources += source + ', '
-    print('Sources: {0}'.format(sources))
-    print('First Seen: {0}'.format(result['firstSeen']))
-    print('Last Seen: {0}'.format(result['lastSeen']))
+        sp.print_status('IP Address: {0}'.format(result['resolve']))
+        sources = ''
+        for source in result['source']:
+            sources += source + ', '
+            print('Sources: {0}'.format(sources))
+            print('First Seen: {0}'.format(result['firstSeen']))
+            print('Last Seen: {0}'.format(result['lastSeen']))
 
 def subdomains(sp, pt):
     """Get, Parse, and print subdomains"""
     subdomains = pt.get_subdomains()
     if not check_resp_for_errors(subdomains, sp):
-    results = subdomains['subdomains']
+        results = subdomains['subdomains']
     sp.print_good('Subdomains for *.{0}:'.format(domain))
     for sub in subdomains['subdomains']:
         print('{0}.{1}').format(sub, domain)
@@ -91,74 +91,74 @@ def metadata(sp, pt):
     """Get, parse, and print metadata information for a domain"""
     domain_metadata = pt.get_enrichment()
     if not check_resp_for_errors(domain_metadata, sp):
-    # pull and print interesting info
-    sp.print_good('Primary Domain: {0}'.format(domain_metadata['primaryDomain']))
-    if len(domain_metadata['subdomains']) > 0:
-        sp.print_status('Additional Subdomains: {0}')
-        for subdomain in domain_metadata['subdomains']:
-        print('{0}.{1}').format(subdomain, domain)
-    sp.print_status('Ever Compromised: {0}'.format(domain_metadata['everCompromised']))
-    sp.print_status('Tags:')
-    for tag in domain_metadata['tags']:
-        print(tag)
+        # pull and print interesting info
+        sp.print_good('Primary Domain: {0}'.format(domain_metadata['primaryDomain']))
+        if len(domain_metadata['subdomains']) > 0:
+            sp.print_status('Additional Subdomains: {0}')
+            for subdomain in domain_metadata['subdomains']:
+                print('{0}.{1}').format(subdomain, domain)
+                sp.print_status('Ever Compromised: {0}'.format(domain_metadata['everCompromised']))
+                sp.print_status('Tags:')
+                for tag in domain_metadata['tags']:
+                    print(tag)
 
 def host_attributes(sp, pt):
     """Get, parse, and print host attributes"""
     host_attributes = pt.get_host_attributes()
     if not check_resp_for_errors(host_attributes, sp):
-    # pull and print interesting info
-    hostnames = set()
-    attributes = ['Operating System', 'Server', 'Framework', 'CMS']
-    results = host_attributes['results']
-    # ugly and cumbersome but it works...
-    for record in results:
-        hostnames.add(record['hostname'])
-        for hostname in hostnames:
-            hostname_dict = {}
-            os = set()
-            server = set()
-            framework = set()
-            cms = set()
-            for record in results:
-                if record['hostname'] == hostname:
-                    if record['category'] == attributes[0]:
-                        os.add(record['label'])
-                    elif record['category'] == attributes[1]:
-                        server.add(record['label'])
-                    elif record['category'] == attributes[2]:
-                        framework.add(record['label'])
-                    elif record['category'] == attributes[3]:
-                        cms.add(record['label'])
-            sp.print_good('Attributes for {0}'.format(hostname))
-            if len(os) > 0:
-                hostname_dict['Operating Systems'] = os
-            elif len(server) > 0:
-                hostname_dict['Servers'] = server
-            elif len(framework) > 0:
-                hostname_dict['Frameworks'] = framework
-            elif len(cms) > 0:
-                hostname_dict['CMS'] = cms
-            for k, v in hostname_dict.iteritems():
-                if len(v) > 0:
-                    print('{0}:'.format(k))
-                    for item in v:
-                        print(item)
+        # pull and print interesting info
+        hostnames = set()
+        attributes = ['Operating System', 'Server', 'Framework', 'CMS']
+        results = host_attributes['results']
+        # ugly and cumbersome but it works...
+        for record in results:
+            hostnames.add(record['hostname'])
+            for hostname in hostnames:
+                hostname_dict = {}
+                os = set()
+                server = set()
+                framework = set()
+                cms = set()
+                for record in results:
+                    if record['hostname'] == hostname:
+                        if record['category'] == attributes[0]:
+                            os.add(record['label'])
+                        elif record['category'] == attributes[1]:
+                            server.add(record['label'])
+                        elif record['category'] == attributes[2]:
+                            framework.add(record['label'])
+                        elif record['category'] == attributes[3]:
+                            cms.add(record['label'])
+                    sp.print_good('Attributes for {0}'.format(hostname))
+                    if len(os) > 0:
+                        hostname_dict['Operating Systems'] = os
+                    elif len(server) > 0:
+                        hostname_dict['Servers'] = server
+                    elif len(framework) > 0:
+                        hostname_dict['Frameworks'] = framework
+                    elif len(cms) > 0:
+                        hostname_dict['CMS'] = cms
+                    for k, v in hostname_dict.iteritems():
+                        if len(v) > 0:
+                            print('{0}:'.format(k))
+                            for item in v:
+                                print(item)
 
 def ip_metadata(sp, pt):
     """Get, parse, and print metadata information for an IP"""
     ip_metadata = pt.get_enrichment()
     if not check_resp_for_errors(ip_metadata, sp):
-    # pull and print interesting info
-    sp.print_good('CIDR Network: {0}'.format(ip_metadata['network']))
-    sp.print_status('Country: {0}'.format(ip_metadata['country']))
-    sp.print_status('Latitude: {0}'.format(ip_metadata['latitude']))
-    sp.print_status('Longitude: {0}'.format(ip_metadata['longitude']))
-    sp.print_status('Sinkhole: {0}'.format(ip_metadata['sinkhole']))
-    sp.print_status('Ever Compromised: {0}'.format(ip_metadata['everCompromised']))
-    if ip_metadata['tags'] > 0:
-        sp.print_status('Tags')
-        for tag in ip_metadata['tags']:
-        print(tag)
+        # pull and print interesting info
+        sp.print_good('CIDR Network: {0}'.format(ip_metadata['network']))
+        sp.print_status('Country: {0}'.format(ip_metadata['country']))
+        sp.print_status('Latitude: {0}'.format(ip_metadata['latitude']))
+        sp.print_status('Longitude: {0}'.format(ip_metadata['longitude']))
+        sp.print_status('Sinkhole: {0}'.format(ip_metadata['sinkhole']))
+        sp.print_status('Ever Compromised: {0}'.format(ip_metadata['everCompromised']))
+        if ip_metadata['tags'] > 0:
+            sp.print_status('Tags')
+            for tag in ip_metadata['tags']:
+                print(tag)
 
 args = get_args()
 
@@ -180,30 +180,30 @@ if all(q == None for q in (domain, ip)):
 # make sure the enum option is compatible with our target type
 if ip != None:
     if enum != 'metadata':
-    sp.print_warn('Currently the "-i" switch is only compatible with the "metadata" option.')
-    authorize_switch = raw_input('Do you want to retrieve metadata for {0}? (y/n) '.format(ip)).lower()
-    if authorize_switch == 'y':
-        enum = 'metadata'
-    else:
-        sp.print_status('Exiting due to incompatible options!')
-        sys.exit(1)
+        sp.print_warn('Currently the "-i" switch is only compatible with the "metadata" option.')
+        authorize_switch = raw_input('Do you want to retrieve metadata for {0}? (y/n) '.format(ip)).lower()
+        if authorize_switch == 'y':
+            enum = 'metadata'
+        else:
+            sp.print_status('Exiting due to incompatible options!')
+            sys.exit(1)
 
 # create authentiction object
 if args.username == None:
     if USERNAME == None:
-    sp.print_error('A username must be defined. This can be done with the "-u" flag or on line 33.')
-    sys.exit(1)
+        sp.print_error('A username must be defined. This can be done with the "-u" flag or on line 33.')
+        sys.exit(1)
     else:
-    user = USERNAME
+        user = USERNAME
 else:
     user = args.username
 
 if args.apikey == None:
     if API_KEY == None:
-    sp.print_error('An API key must be defined. This can be done with the "-a" flag or on line 34.')
-    sys.exit(1)
+        sp.print_error('An API key must be defined. This can be done with the "-a" flag or on line 34.')
+        sys.exit(1)
     else:
-    key = API_KEY
+        key = API_KEY
 else:
     key = args.apikey
 auth = (user, key)
@@ -216,10 +216,10 @@ auth_response = pt.verify_account()
 auth_errors = check_resp_for_errors(auth_response, sp)
 if not auth_errors:
     if verbose:
-    sp.print_status('Successfully authenticated as: {0}'.format(user))
-else:
-    sp.print_error('Authentication failed for {0}'.format(user))
-    sys.exit(1)
+        sp.print_status('Successfully authenticated as: {0}'.format(user))
+    else:
+        sp.print_error('Authentication failed for {0}'.format(user))
+        sys.exit(1)
 
 # enumerate all the things
 if enum == 'all':
@@ -233,8 +233,8 @@ elif enum == 'subdomains':
     subdomains(sp, pt)
 elif enum == 'metadata':
     if ip == None:
-    metadata(sp, pt)
+        metadata(sp, pt)
     else:
-    ip_metadata(sp, pt)
+        ip_metadata(sp, pt)
 elif enum == 'attributes':
     host_attributes(sp, pt)
