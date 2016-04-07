@@ -50,10 +50,10 @@ def get_args():
   parser.add_argument('enum', choices=['all', 'dns', 'subdomains', 'metadata', 'attributes'],
     default='all', help='info to enumerate for target IP or domain.')
   meg = parser.add_mutually_exclusive_group()
-  meg.add_argument('-d', '--domain', help='domain to enumerate', default=None)
-  meg.add_argument('-i', '--ipaddress', help='IP address to enumerate', default=None)
-  parser.add_argument('-u', '--username', help='PassiveTotal username', default=None)
-  parser.add_argument('-a', '--apikey', help='PassiveTotal API key', default=None)
+  meg.add_argument('-d', '--domain', help='domain to enumerate')
+  meg.add_argument('-i', '--ipaddress', help='IP address to enumerate')
+  parser.add_argument('-u', '--username', help='PassiveTotal username')
+  parser.add_argument('-a', '--apikey', help='PassiveTotal API key')
   parser.add_argument('-v', '--verbose', help='enable verbose output', action='store_true')
   args = parser.parse_args()
   return args
@@ -61,7 +61,7 @@ def get_args():
 def passive_dns(sp, pt):
   """Get, parse, and print passive DNS records"""
   passive_dns = pt.get_passive_dns()
-  if check_resp_for_errors(passive_dns, sp) == False:
+  if not check_resp_for_errors(passive_dns, sp):
     sp.print_good('Total records for "{0}": {1}'.format(domain, passive_dns['totalRecords']))
   results = passive_dns['results']
   for result in results:
@@ -81,7 +81,7 @@ def passive_dns(sp, pt):
 def subdomains(sp, pt):
   """Get, Parse, and print subdomains"""
   subdomains = pt.get_subdomains()
-  if check_resp_for_errors(subdomains, sp) == False:
+  if not check_resp_for_errors(subdomains, sp):
     results = subdomains['subdomains']
     sp.print_good('Subdomains for *.{0}:'.format(domain))
     for sub in subdomains['subdomains']:
@@ -90,7 +90,7 @@ def subdomains(sp, pt):
 def metadata(sp, pt):
   """Get, parse, and print metadata information for a domain"""
   domain_metadata = pt.get_enrichment()
-  if check_resp_for_errors(domain_metadata, sp) == False:
+  if not check_resp_for_errors(domain_metadata, sp):
     # pull and print interesting info
     sp.print_good('Primary Domain: {0}'.format(domain_metadata['primaryDomain']))
     if len(domain_metadata['subdomains']) > 0:
@@ -105,7 +105,7 @@ def metadata(sp, pt):
 def host_attributes(sp, pt):
   """Get, parse, and print host attributes"""
   host_attributes = pt.get_host_attributes()
-  if check_resp_for_errors(host_attributes, sp) == False:
+  if not check_resp_for_errors(host_attributes, sp):
     # pull and print interesting info
     hostnames = set()
     attributes = ['Operating System', 'Server', 'Framework', 'CMS']
@@ -147,7 +147,7 @@ def host_attributes(sp, pt):
 def ip_metadata(sp, pt):
   """Get, parse, and print metadata information for an IP"""
   ip_metadata = pt.get_enrichment()
-  if check_resp_for_errors(ip_metadata, sp) == False:
+  if not check_resp_for_errors(ip_metadata, sp):
     # pull and print interesting info
     sp.print_good('CIDR Network: {0}'.format(ip_metadata['network']))
     sp.print_status('Country: {0}'.format(ip_metadata['country']))
@@ -160,8 +160,7 @@ def ip_metadata(sp, pt):
       for tag in ip_metadata['tags']:
         print(tag)
 
-if __name__ == '__main__':
- args = get_args()
+args = get_args()
 
 # create printer object
 sp = p.StatusPrinter()
