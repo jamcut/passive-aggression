@@ -24,6 +24,8 @@ all | all of the above | n/a
 ### Note:
 The username and api key can be configured within the script on lines 33 and 34, respectively.  However, if passed as options they will override any that are hard-coded.
 
+## Installation:
+<pre>git clone https://github.com/jamcut/passive-aggression.git && cd passive-aggression/ && pip install -r requirements.txt</pre>
 ## Usage:
 
 With a domain target:
