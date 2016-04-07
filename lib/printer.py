@@ -24,7 +24,7 @@ try:
     COLORS = True
 except ImportError:
     print('[-] Could not import termcolor.  For colored output, please run')
-    print('pip install termcolor')
+    print('pip install -r requirements.txt')
 
 class StatusPrinter():
     """Class for accessing status printing functions"""

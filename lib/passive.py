@@ -24,7 +24,7 @@ try:
     import requests
 except ImportError:
     print('[-] Could not import requests.  Please run')
-    print('pip install requests')
+    print('pip install -r requirements.txt')
     sys.exit(1)
 
 class PassiveTotal():
