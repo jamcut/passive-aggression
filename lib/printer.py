@@ -26,7 +26,7 @@ except ImportError:
     print('[-] Could not import termcolor.  For colored output, please run')
     print('pip install -r requirements.txt')
 
-class StatusPrinter():
+class StatusPrinter(object):
     """Class for accessing status printing functions"""
 
     def print_status(self, msg):

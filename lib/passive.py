@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 import json
+import sys
 
 try:
     import requests
@@ -48,7 +49,6 @@ class PassiveTotal():
 
     def verify_account(self):
         """Confirm that the specified Passive Total account is valid"""
-        successful_auth = False
         url = self.api_base_url + 'account'
         loaded_content = self.send_request_v2(url, params=None)
         return loaded_content

@@ -189,8 +189,8 @@ if ip != None:
             sys.exit(1)
 
 # create authentiction object
-if args.username == None:
-    if USERNAME == None:
+if args.username is None:
+    if USERNAME is None:
         sp.print_error('A username must be defined. This can be done with the "-u" flag or on line 33.')
         sys.exit(1)
     else:
@@ -198,8 +198,8 @@ if args.username == None:
 else:
     user = args.username
 
-if args.apikey == None:
-    if API_KEY == None:
+if args.apikey is None:
+    if API_KEY is None:
         sp.print_error('An API key must be defined. This can be done with the "-a" flag or on line 34.')
         sys.exit(1)
     else:
@@ -217,9 +217,9 @@ auth_errors = check_resp_for_errors(auth_response, sp)
 if not auth_errors:
     if verbose:
         sp.print_status('Successfully authenticated as: {0}'.format(user))
-    else:
-        sp.print_error('Authentication failed for {0}'.format(user))
-        sys.exit(1)
+else:
+    sp.print_error('Authentication failed for {0}'.format(user))
+    sys.exit(1)
 
 # enumerate all the things
 if enum == 'all':
