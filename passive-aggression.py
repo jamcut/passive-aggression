@@ -34,78 +34,78 @@ USERNAME = None
 API_KEY = None
 
 def check_resp_for_errors(loaded_content, sp):
-  """Check API responses for errors"""
-  errors = True
-  if 'error' in loaded_content.iterkeys():
-    if loaded_content['error'] != None:
-      error_message = loaded_content['error']['message']
-      sp.print_error('Message from PassiveTotal: {0}'.format(error_message))
-      return errors
-  errors = False
-  return errors
+    """Check API responses for errors"""
+    errors = True
+    if 'error' in loaded_content.iterkeys():
+        if loaded_content['error'] != None:
+            error_message = loaded_content['error']['message']
+            sp.print_error('Message from PassiveTotal: {0}'.format(error_message))
+            return errors
+        errors = False
+        return errors
 
 def get_args():
-  """Get arguments from the command line"""
-  parser = argparse.ArgumentParser(description='Script to leverage the Passive Total API for target profiling and recon.')
-  parser.add_argument('enum', choices=['all', 'dns', 'subdomains', 'metadata', 'attributes'],
+    """Get arguments from the command line"""
+    parser = argparse.ArgumentParser(description='Script to leverage the Passive Total API for target profiling and recon.')
+    parser.add_argument('enum', choices=['all', 'dns', 'subdomains', 'metadata', 'attributes'],
     default='all', help='info to enumerate for target IP or domain.')
-  meg = parser.add_mutually_exclusive_group()
-  meg.add_argument('-d', '--domain', help='domain to enumerate')
-  meg.add_argument('-i', '--ipaddress', help='IP address to enumerate')
-  parser.add_argument('-u', '--username', help='PassiveTotal username')
-  parser.add_argument('-a', '--apikey', help='PassiveTotal API key')
-  parser.add_argument('-v', '--verbose', help='enable verbose output', action='store_true')
-  args = parser.parse_args()
-  return args
+    meg = parser.add_mutually_exclusive_group()
+    meg.add_argument('-d', '--domain', help='domain to enumerate')
+    meg.add_argument('-i', '--ipaddress', help='IP address to enumerate')
+    parser.add_argument('-u', '--username', help='PassiveTotal username')
+    parser.add_argument('-a', '--apikey', help='PassiveTotal API key')
+    parser.add_argument('-v', '--verbose', help='enable verbose output', action='store_true')
+    args = parser.parse_args()
+    return args
 
 def passive_dns(sp, pt):
-  """Get, parse, and print passive DNS records"""
-  passive_dns = pt.get_passive_dns()
-  if not check_resp_for_errors(passive_dns, sp):
+    """Get, parse, and print passive DNS records"""
+    passive_dns = pt.get_passive_dns()
+    if not check_resp_for_errors(passive_dns, sp):
     sp.print_good('Total records for "{0}": {1}'.format(domain, passive_dns['totalRecords']))
-  results = passive_dns['results']
-  for result in results:
+    results = passive_dns['results']
+    for result in results:
     if not 'resolve' in result:
-      # this critical piece of info is missing so skip this result
-      if verbose == True:
+        # this critical piece of info is missing so skip this result
+        if verbose == True:
         sp.print_warn("Record skipped because it did not include an IP address.")
-      continue
+        continue
     sp.print_status('IP Address: {0}'.format(result['resolve']))
     sources = ''
     for source in result['source']:
-      sources += source + ', '
+        sources += source + ', '
     print('Sources: {0}'.format(sources))
     print('First Seen: {0}'.format(result['firstSeen']))
     print('Last Seen: {0}'.format(result['lastSeen']))
 
 def subdomains(sp, pt):
-  """Get, Parse, and print subdomains"""
-  subdomains = pt.get_subdomains()
-  if not check_resp_for_errors(subdomains, sp):
+    """Get, Parse, and print subdomains"""
+    subdomains = pt.get_subdomains()
+    if not check_resp_for_errors(subdomains, sp):
     results = subdomains['subdomains']
     sp.print_good('Subdomains for *.{0}:'.format(domain))
     for sub in subdomains['subdomains']:
-      print('{0}.{1}').format(sub, domain)
+        print('{0}.{1}').format(sub, domain)
 
 def metadata(sp, pt):
-  """Get, parse, and print metadata information for a domain"""
-  domain_metadata = pt.get_enrichment()
-  if not check_resp_for_errors(domain_metadata, sp):
+    """Get, parse, and print metadata information for a domain"""
+    domain_metadata = pt.get_enrichment()
+    if not check_resp_for_errors(domain_metadata, sp):
     # pull and print interesting info
     sp.print_good('Primary Domain: {0}'.format(domain_metadata['primaryDomain']))
     if len(domain_metadata['subdomains']) > 0:
-      sp.print_status('Additional Subdomains: {0}')
-      for subdomain in domain_metadata['subdomains']:
+        sp.print_status('Additional Subdomains: {0}')
+        for subdomain in domain_metadata['subdomains']:
         print('{0}.{1}').format(subdomain, domain)
     sp.print_status('Ever Compromised: {0}'.format(domain_metadata['everCompromised']))
     sp.print_status('Tags:')
     for tag in domain_metadata['tags']:
-      print(tag)
+        print(tag)
 
 def host_attributes(sp, pt):
-  """Get, parse, and print host attributes"""
-  host_attributes = pt.get_host_attributes()
-  if not check_resp_for_errors(host_attributes, sp):
+    """Get, parse, and print host attributes"""
+    host_attributes = pt.get_host_attributes()
+    if not check_resp_for_errors(host_attributes, sp):
     # pull and print interesting info
     hostnames = set()
     attributes = ['Operating System', 'Server', 'Framework', 'CMS']
@@ -145,9 +145,9 @@ def host_attributes(sp, pt):
                         print(item)
 
 def ip_metadata(sp, pt):
-  """Get, parse, and print metadata information for an IP"""
-  ip_metadata = pt.get_enrichment()
-  if not check_resp_for_errors(ip_metadata, sp):
+    """Get, parse, and print metadata information for an IP"""
+    ip_metadata = pt.get_enrichment()
+    if not check_resp_for_errors(ip_metadata, sp):
     # pull and print interesting info
     sp.print_good('CIDR Network: {0}'.format(ip_metadata['network']))
     sp.print_status('Country: {0}'.format(ip_metadata['country']))
@@ -156,8 +156,8 @@ def ip_metadata(sp, pt):
     sp.print_status('Sinkhole: {0}'.format(ip_metadata['sinkhole']))
     sp.print_status('Ever Compromised: {0}'.format(ip_metadata['everCompromised']))
     if ip_metadata['tags'] > 0:
-      sp.print_status('Tags')
-      for tag in ip_metadata['tags']:
+        sp.print_status('Tags')
+        for tag in ip_metadata['tags']:
         print(tag)
 
 args = get_args()
@@ -168,44 +168,44 @@ sp = p.StatusPrinter()
 enum = args.enum
 verbose = False
 if args.verbose:
-  verbose = True
+    verbose = True
 
 # make sure we have at least a domain or an IP to query
 domain = args.domain
 ip = args.ipaddress
 if all(q == None for q in (domain, ip)):
-  sp.print_error('Either a domain (-d) or an IP (-i) is required.')
-  sys.exit(1)
+    sp.print_error('Either a domain (-d) or an IP (-i) is required.')
+    sys.exit(1)
 
 # make sure the enum option is compatible with our target type
 if ip != None:
-  if enum != 'metadata':
+    if enum != 'metadata':
     sp.print_warn('Currently the "-i" switch is only compatible with the "metadata" option.')
     authorize_switch = raw_input('Do you want to retrieve metadata for {0}? (y/n) '.format(ip)).lower()
     if authorize_switch == 'y':
-      enum = 'metadata'
+        enum = 'metadata'
     else:
-      sp.print_status('Exiting due to incompatible options!')
-      sys.exit(1)
+        sp.print_status('Exiting due to incompatible options!')
+        sys.exit(1)
 
 # create authentiction object
 if args.username == None:
-  if USERNAME == None:
-    sp.print_error('A username must be defined.  This can be done with the "-u" flag or on line 33.')
+    if USERNAME == None:
+    sp.print_error('A username must be defined. This can be done with the "-u" flag or on line 33.')
     sys.exit(1)
-  else:
+    else:
     user = USERNAME
 else:
-  user = args.username
+    user = args.username
 
 if args.apikey == None:
-  if API_KEY == None:
-    sp.print_error('An API key must be defined.  This can be done with the "-a" flag or on line 34.')
+    if API_KEY == None:
+    sp.print_error('An API key must be defined. This can be done with the "-a" flag or on line 34.')
     sys.exit(1)
-  else:
+    else:
     key = API_KEY
 else:
-  key = args.apikey
+    key = args.apikey
 auth = (user, key)
 
 # create PassiveTotal object
@@ -215,26 +215,26 @@ pt = passive.PassiveTotal(auth, domain, ip, verbose)
 auth_response = pt.verify_account()
 auth_errors = check_resp_for_errors(auth_response, sp)
 if not auth_errors:
-  if verbose:
+    if verbose:
     sp.print_status('Successfully authenticated as: {0}'.format(user))
 else:
-  sp.print_error('Authentication failed for {0}'.format(user))
-  sys.exit(1)
+    sp.print_error('Authentication failed for {0}'.format(user))
+    sys.exit(1)
 
 # enumerate all the things
 if enum == 'all':
-  passive_dns(sp, pt)
-  subdomains(sp, pt)
-  metadata(sp, pt)
-  host_attributes(sp, pt)
-elif enum == 'dns':
-  passive_dns(sp, pt)
-elif enum == 'subdomains':
-  subdomains(sp, pt)
-elif enum == 'metadata':
-  if ip == None:
+    passive_dns(sp, pt)
+    subdomains(sp, pt)
     metadata(sp, pt)
-  else:
+    host_attributes(sp, pt)
+elif enum == 'dns':
+    passive_dns(sp, pt)
+elif enum == 'subdomains':
+    subdomains(sp, pt)
+elif enum == 'metadata':
+    if ip == None:
+    metadata(sp, pt)
+    else:
     ip_metadata(sp, pt)
 elif enum == 'attributes':
-  host_attributes(sp, pt)
+    host_attributes(sp, pt)
