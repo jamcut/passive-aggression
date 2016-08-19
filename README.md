@@ -22,7 +22,7 @@ all | all of the above | n/a
 * -v, --verbose, enable verbose output
 
 ### Note:
-The username and api key can be configured within the script on lines 33 and 34, respectively.  However, if passed as options they will override any that are hard-coded.
+The username and api key can be configured within environment the environment variables - PT_USER and PT_API_KEY, respectively.  However, if passed as options they will take precedence.
 
 ## Installation:
 <pre>git clone https://github.com/jamcut/passive-aggression.git && cd passive-aggression/ && pip install -r requirements.txt</pre>
