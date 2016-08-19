@@ -21,17 +21,27 @@
 
 """Script to pull information from PassiveTotal.org using their API"""
 import argparse
-from os import mkdir
-from os.path import exists
 import sys
 import time
+
+from os import environ, mkdir
+from os.path import exists
 
 import lib.passive as passive
 import lib.printer as p
 
-# Hardcode your creds if you are inclined
-USERNAME = None
-API_KEY = None
+# check for creds in env vars
+
+if environ['PT_USER']:
+    username = environ['PT_USER']
+else:
+    username = None
+
+if environ['PT_API_KEY']:
+    api_key = environ['PT_API_KEY']
+else:
+    api_key = None
+
 
 def check_resp_for_errors(loaded_content, sp):
     """Check API responses for errors"""
@@ -190,20 +200,20 @@ if ip != None:
 
 # create authentiction object
 if args.username is None:
-    if USERNAME is None:
-        sp.print_error('A username must be defined. This can be done with the "-u" flag or on line 33.')
+    if username is None:
+        sp.print_error('A username must be defined. Either set "PT_USER" env variable or use "-u".')
         sys.exit(1)
     else:
-        user = USERNAME
+        user = username
 else:
     user = args.username
 
 if args.apikey is None:
-    if API_KEY is None:
-        sp.print_error('An API key must be defined. This can be done with the "-a" flag or on line 34.')
+    if api_key is None:
+        sp.print_error('An API key must be defined. Either set "PT_API_KEY" env variable or use "-a".')
         sys.exit(1)
     else:
-        key = API_KEY
+        key = api_key
 else:
     key = args.apikey
 auth = (user, key)
