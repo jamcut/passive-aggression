@@ -31,16 +31,8 @@ import lib.passive as passive
 import lib.printer as p
 
 # check for creds in env vars
-
-if environ['PT_USER']:
-    username = environ['PT_USER']
-else:
-    username = None
-
-if environ['PT_API_KEY']:
-    api_key = environ['PT_API_KEY']
-else:
-    api_key = None
+api_key = environ.get('PT_API_KEY')
+username = environ.get('PT_USER')
 
 
 def check_resp_for_errors(loaded_content, sp):
