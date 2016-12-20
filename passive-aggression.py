@@ -21,6 +21,7 @@
 
 """Script to pull information from PassiveTotal.org using their API"""
 import argparse
+import collections
 import sys
 import time
 
@@ -107,44 +108,19 @@ def metadata(sp, pt):
 def host_attributes(sp, pt):
     """Get, parse, and print host attributes"""
     host_attributes = pt.get_host_attributes()
-    if not check_resp_for_errors(host_attributes, sp):
-        # pull and print interesting info
-        hostnames = set()
-        attributes = ['Operating System', 'Server', 'Framework', 'CMS']
-        results = host_attributes['results']
-        # ugly and cumbersome but it works...
-        for record in results:
-            hostnames.add(record['hostname'])
-            for hostname in hostnames:
-                hostname_dict = {}
-                os = set()
-                server = set()
-                framework = set()
-                cms = set()
-                for record in results:
-                    if record['hostname'] == hostname:
-                        if record['category'] == attributes[0]:
-                            os.add(record['label'])
-                        elif record['category'] == attributes[1]:
-                            server.add(record['label'])
-                        elif record['category'] == attributes[2]:
-                            framework.add(record['label'])
-                        elif record['category'] == attributes[3]:
-                            cms.add(record['label'])
-                    sp.print_good('Attributes for {0}'.format(hostname))
-                    if len(os) > 0:
-                        hostname_dict['Operating Systems'] = os
-                    elif len(server) > 0:
-                        hostname_dict['Servers'] = server
-                    elif len(framework) > 0:
-                        hostname_dict['Frameworks'] = framework
-                    elif len(cms) > 0:
-                        hostname_dict['CMS'] = cms
-                    for k, v in hostname_dict.iteritems():
-                        if len(v) > 0:
-                            print('{0}:'.format(k))
-                            for item in v:
-                                print(item)
+    if check_resp_for_errors(host_attributes, sp):
+        return
+    # pull and print interesting info
+    attributes = ('Operating System', 'Server', 'Framework', 'CMS')
+    hosts = collections.defaultdict(lambda: collections.defaultdict(set))
+    for result in host_attributes['results']:
+        hosts[result['hostname']][result['category']].add(result['label'])
+    for host, details in hosts.items():
+        print(host)
+        for category, labels in details.items():
+            if category not in attributes:
+                continue
+            print("  {0}: {1}".format(category, ', '.join(labels)))
 
 def ip_metadata(sp, pt):
     """Get, parse, and print metadata information for an IP"""
